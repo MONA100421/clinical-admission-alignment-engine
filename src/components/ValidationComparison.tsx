@@ -9,8 +9,7 @@ interface ValidationComparisonProps {
   referenceNotes: string;
 }
 
-// UTILITIES 
-
+// UTILITIES
 function computeSimilarity(a: string, b: string): number {
   const clean = (text: string) =>
     text
@@ -34,7 +33,12 @@ function highlightDifferences(
   reference: string,
 ): React.ReactNode[] {
   const aiWords = ai.split(/\s+/);
-  const refSet = new Set(reference.toLowerCase().split(/\s+/));
+  const refSet = new Set(
+    reference
+      .toLowerCase()
+      .replace(/[^\w\s]/g, "")
+      .split(/\s+/),
+  );
 
   return aiWords.map((word, i) => {
     const cleaned = word.toLowerCase().replace(/[.,;:!?]/g, "");
@@ -48,67 +52,37 @@ function highlightDifferences(
   });
 }
 
-// SECTION PARSER
-
-function extractSection(text: string, title: string): string {
-  const regex = new RegExp(
-    `${title}[\\s\\S]*?(?=(Clinical Summary|Medical Necessity Justification|Risk Stratification|Conclusion|$))`,
-    "i",
-  );
-  const match = text.match(regex);
-  return match ? match[0] : "";
-}
-
-function parseReferenceSections(reference: string) {
-  return {
-    clinicalSummary: extractSection(reference, "Clinical Summary"),
-    medicalNecessityJustification: extractSection(
-      reference,
-      "Medical Necessity Justification",
-    ),
-    riskStratification: extractSection(reference, "Risk Stratification"),
-    conclusion: extractSection(reference, "Conclusion"),
-  };
-}
-
 // COMPONENT
-
 const ValidationComparison: React.FC<ValidationComparisonProps> = ({
   aiNotes,
   referenceNotes,
 }) => {
-  const refSections = parseReferenceSections(referenceNotes);
-
   const structuredSections = [
     {
       title: "Clinical Summary",
       ai: aiNotes.clinicalSummary,
-      ref: refSections.clinicalSummary,
     },
     {
       title: "Medical Necessity Justification",
       ai: aiNotes.medicalNecessityJustification,
-      ref: refSections.medicalNecessityJustification,
     },
     {
       title: "Risk Stratification",
       ai: aiNotes.riskStratification,
-      ref: refSections.riskStratification,
     },
     {
       title: "Conclusion",
       ai: aiNotes.conclusion,
-      ref: refSections.conclusion,
     },
   ];
 
-  const sectionScores = structuredSections.map((s) =>
-    computeSimilarity(s.ai, s.ref),
+  const sectionScores = structuredSections.map((section) =>
+    computeSimilarity(section.ai, referenceNotes),
   );
 
   const overallSimilarity =
     Math.round(
-      sectionScores.reduce((sum, s) => sum + s, 0) / sectionScores.length,
+      sectionScores.reduce((sum, s) => sum + s, 0) / structuredSections.length,
     ) || 0;
 
   return (
@@ -149,7 +123,7 @@ const ValidationComparison: React.FC<ValidationComparisonProps> = ({
               </CardHeader>
               <CardContent>
                 <p className="text-sm leading-relaxed">
-                  {highlightDifferences(section.ai, section.ref)}
+                  {highlightDifferences(section.ai, referenceNotes)}
                 </p>
               </CardContent>
             </Card>
