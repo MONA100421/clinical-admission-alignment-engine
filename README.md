@@ -38,7 +38,6 @@ http://localhost:5050
 ### Frontend
 
 ```bash
-cd src
 npm install
 npm run dev
 
