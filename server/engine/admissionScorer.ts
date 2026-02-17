@@ -12,7 +12,7 @@ export function computeAdmissionDecision(
 ): AdmissionDecision {
   const totalScore = evaluated.reduce((sum, c) => sum + c.scoreContribution, 0);
 
-  const maxPossibleScore = evaluated.length * 10;
+  const maxPossibleScore = evaluated.length * 5;
 
   const percentage =
     maxPossibleScore > 0

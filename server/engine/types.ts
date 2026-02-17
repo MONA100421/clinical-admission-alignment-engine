@@ -23,15 +23,6 @@ export interface ClinicalData {
   outpatientFailure: boolean;
 }
 
-export interface EvaluatedCriterion {
-  criterionId: string;
-  criterionText: string;
-  status: "Met" | "Partially Met" | "Missing";
-  evidenceFound: string;
-  suggestedLanguage: string;
-  scoreContribution: number;
-}
-
 export interface AlignmentResult {
   extractedCriteria: ExtractedCriterion[];
   revisedNotes: {

@@ -1,20 +1,30 @@
 import { ExtractedCriterion, CriterionCategory } from "./types.js";
 
 interface PdfSections {
-  admissionCriteria?: string[];
-  [key: string]: string[] | undefined;
+  [key: string]: string[];
 }
 
 export function extractCriteria(sections: PdfSections): ExtractedCriterion[] {
-  const lines: string[] = sections.admissionCriteria ?? [];
+  const allLines: string[] = Object.values(sections).flat();
 
-  return lines
-    .filter((line: string) => line.length > 30)
-    .map((line: string, index: number) => ({
-      id: `C${index + 1}`,
-      text: line,
-      category: classifyCriterion(line),
-    }));
+  const candidateLines = allLines
+    .map((line) => line.trim())
+    .filter((line) => line.length > 40)
+    .filter((line) =>
+      /oxygen|hypox|saturation|imaging|x-ray|ct|lab|wbc|blood|outpatient|failed|comorbid|risk/i.test(
+        line,
+      ),
+    );
+
+  const uniqueLines = Array.from(new Set(candidateLines));
+
+  const selected = uniqueLines.slice(0, 10);
+
+  return selected.map((line, index) => ({
+    id: `C${index + 1}`,
+    text: line,
+    category: classifyCriterion(line),
+  }));
 }
 
 function classifyCriterion(text: string): CriterionCategory {
