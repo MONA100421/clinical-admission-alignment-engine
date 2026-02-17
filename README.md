@@ -22,6 +22,30 @@ This project implements a **two-page clinical workflow system** that:
 
 ## Core Architecture
 
+## 🚀 Getting Started
+
+### Backend
+
+```bash
+cd server
+npm install
+npm run dev
+
+Server runs at:
+http://localhost:5050
+```
+
+### Frontend
+
+```bash
+cd src
+npm install
+npm run dev
+
+Frontend runs at:
+http://localhost:8081
+```
+
 ### Frontend
 
 * **React**
