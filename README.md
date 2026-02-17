@@ -41,12 +41,6 @@ This project implements a **two-page clinical workflow system** that:
 
 ### Page 1 – Input Interface
 
-<p align="center">
-  <img src="screenshots/main_workflow.png" width="800" />
-  <img src="screenshots/Missing_Criteria_Evaluation.png" width="800" />
-  <img src="screenshots/Validation_Mode.png" width="800" />
-</p>
-
 Required Inputs:
 
 * Doctor Raw Notes (Text Input)
@@ -102,6 +96,12 @@ Each extracted criterion is classified as:
 * Met
 * Partially Met
 * Missing
+
+<p align="center">
+  <img src="screenshots/main_workflow.png" width="800" />
+  <img src="screenshots/Missing_Criteria_Evaluation.png" width="800" />
+  <img src="screenshots/Validation_Mode.png" width="800" />
+</p>
 
 ## Deterministic Rule Engine
 
