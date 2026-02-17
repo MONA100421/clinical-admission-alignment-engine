@@ -43,6 +43,8 @@ This project implements a **two-page clinical workflow system** that:
 
 <p align="center">
   <img src="screenshots/main_workflow.png" width="800" />
+  <img src="screenshots/Missing_Criteria_Evaluation.png" width="800" />
+  <img src="screenshots/Validation_Mode.png" width="800" />
 </p>
 
 Required Inputs:
