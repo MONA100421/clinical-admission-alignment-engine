@@ -14,7 +14,7 @@ export function buildJustification(
   // Criterion-driven generation
   for (const criterion of met) {
     summaryLines.push(
-      `Documentation satisfies guideline criterion: ${criterion.criterionText}`,
+      `Admission criteria met: ${criterion.category} criteria satisfied.`,
     );
   }
 

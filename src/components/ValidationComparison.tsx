@@ -12,18 +12,21 @@ interface ValidationComparisonProps {
 // UTILITIES 
 
 function computeSimilarity(a: string, b: string): number {
-  const wordsA = a.toLowerCase().split(/\s+/).filter(Boolean);
-  const wordsB = b.toLowerCase().split(/\s+/).filter(Boolean);
+  const clean = (text: string) =>
+    text
+      .toLowerCase()
+      .replace(/[^\w\s]/g, "")
+      .split(/\s+/)
+      .filter((w) => w.length > 3);
 
-  if (wordsA.length === 0 && wordsB.length === 0) return 100;
-  if (wordsA.length === 0 || wordsB.length === 0) return 0;
+  const wordsA = new Set(clean(a));
+  const wordsB = new Set(clean(b));
 
-  const setA = new Set(wordsA);
-  const setB = new Set(wordsB);
-  const intersection = new Set([...setA].filter((w) => setB.has(w)));
-  const union = new Set([...setA, ...setB]);
+  if (wordsA.size === 0 || wordsB.size === 0) return 0;
 
-  return Math.round((intersection.size / union.size) * 100);
+  const intersection = [...wordsA].filter((w) => wordsB.has(w)).length;
+
+  return Math.round((intersection / wordsB.size) * 100);
 }
 
 function highlightDifferences(
