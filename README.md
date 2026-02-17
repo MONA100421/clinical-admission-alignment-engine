@@ -26,6 +26,19 @@ This system implements a two-page clinical workflow that accepts raw physician n
 - Processing: Deterministic Rule Engine (no LLM/AI APIs)
 - Data flow: Linear pipeline through discrete, stateless components
 
+## Data Workflow
+```mermaid
+graph LR
+A[PDF Text] --> B[parsePdfSections]
+B --> C[extractCriteria]
+D[Doctor Notes] --> E[extractClinicalData]
+C --> F[evaluateCriteria]
+E --> F
+F --> G[computeAdmissionDecision]
+F --> H[buildJustification]
+G --> H
+```
+
 ## Two-Page Workflow
 
 #### Application Preview
