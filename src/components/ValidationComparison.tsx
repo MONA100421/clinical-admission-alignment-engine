@@ -9,9 +9,12 @@ interface ValidationComparisonProps {
   referenceNotes: string;
 }
 
+// UTILITIES 
+
 function computeSimilarity(a: string, b: string): number {
   const wordsA = a.toLowerCase().split(/\s+/).filter(Boolean);
   const wordsB = b.toLowerCase().split(/\s+/).filter(Boolean);
+
   if (wordsA.length === 0 && wordsB.length === 0) return 100;
   if (wordsA.length === 0 || wordsB.length === 0) return 0;
 
@@ -19,6 +22,7 @@ function computeSimilarity(a: string, b: string): number {
   const setB = new Set(wordsB);
   const intersection = new Set([...setA].filter((w) => setB.has(w)));
   const union = new Set([...setA, ...setB]);
+
   return Math.round((intersection.size / union.size) * 100);
 }
 
@@ -30,7 +34,9 @@ function highlightDifferences(
   const refSet = new Set(reference.toLowerCase().split(/\s+/));
 
   return aiWords.map((word, i) => {
-    const isMatch = refSet.has(word.toLowerCase().replace(/[.,;:!?]/g, ""));
+    const cleaned = word.toLowerCase().replace(/[.,;:!?]/g, "");
+    const isMatch = refSet.has(cleaned);
+
     return (
       <span key={i} className={isMatch ? "" : "bg-accent font-medium"}>
         {word}{" "}
@@ -39,29 +45,76 @@ function highlightDifferences(
   });
 }
 
+// SECTION PARSER
+
+function extractSection(text: string, title: string): string {
+  const regex = new RegExp(
+    `${title}[\\s\\S]*?(?=(Clinical Summary|Medical Necessity Justification|Risk Stratification|Conclusion|$))`,
+    "i",
+  );
+  const match = text.match(regex);
+  return match ? match[0] : "";
+}
+
+function parseReferenceSections(reference: string) {
+  return {
+    clinicalSummary: extractSection(reference, "Clinical Summary"),
+    medicalNecessityJustification: extractSection(
+      reference,
+      "Medical Necessity Justification",
+    ),
+    riskStratification: extractSection(reference, "Risk Stratification"),
+    conclusion: extractSection(reference, "Conclusion"),
+  };
+}
+
+// COMPONENT
+
 const ValidationComparison: React.FC<ValidationComparisonProps> = ({
   aiNotes,
   referenceNotes,
 }) => {
-  const sections = [
-    { title: "Clinical Summary", content: aiNotes.clinicalSummary },
+  const refSections = parseReferenceSections(referenceNotes);
+
+  const structuredSections = [
+    {
+      title: "Clinical Summary",
+      ai: aiNotes.clinicalSummary,
+      ref: refSections.clinicalSummary,
+    },
     {
       title: "Medical Necessity Justification",
-      content: aiNotes.medicalNecessityJustification,
+      ai: aiNotes.medicalNecessityJustification,
+      ref: refSections.medicalNecessityJustification,
     },
-    { title: "Risk Stratification", content: aiNotes.riskStratification },
-    { title: "Conclusion", content: aiNotes.conclusion },
+    {
+      title: "Risk Stratification",
+      ai: aiNotes.riskStratification,
+      ref: refSections.riskStratification,
+    },
+    {
+      title: "Conclusion",
+      ai: aiNotes.conclusion,
+      ref: refSections.conclusion,
+    },
   ];
 
-  const fullAi = sections.map((s) => s.content).join(" ");
-  const overallSimilarity = computeSimilarity(fullAi, referenceNotes);
+  const sectionScores = structuredSections.map((s) =>
+    computeSimilarity(s.ai, s.ref),
+  );
+
+  const overallSimilarity =
+    Math.round(
+      sectionScores.reduce((sum, s) => sum + s, 0) / sectionScores.length,
+    ) || 0;
 
   return (
     <ScrollArea className="h-[calc(100vh-320px)]">
       <div className="space-y-4 pr-4">
+        {/* Overall Score */}
         <Card>
           <CardContent className="pt-4 flex items-center justify-between">
-            <span className="font-semibold">Overall Similarity Score</span>
+            <span className="font-semibold">Overall Structured Similarity</span>
             <Badge
               variant="outline"
               className={
@@ -77,8 +130,10 @@ const ValidationComparison: React.FC<ValidationComparisonProps> = ({
           </CardContent>
         </Card>
 
-        {sections.map((section) => {
-          const sectionSim = computeSimilarity(section.content, referenceNotes);
+        {/* Section-by-section comparison */}
+        {structuredSections.map((section, index) => {
+          const sectionSim = sectionScores[index];
+
           return (
             <Card key={section.title}>
               <CardHeader className="pb-2">
@@ -91,7 +146,7 @@ const ValidationComparison: React.FC<ValidationComparisonProps> = ({
               </CardHeader>
               <CardContent>
                 <p className="text-sm leading-relaxed">
-                  {highlightDifferences(section.content, referenceNotes)}
+                  {highlightDifferences(section.ai, section.ref)}
                 </p>
               </CardContent>
             </Card>

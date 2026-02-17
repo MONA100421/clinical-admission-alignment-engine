@@ -1,6 +1,6 @@
 export interface ExtractedCriterion {
   id: string;
-  criterion: string;
+  text: string;
   category: string;
 }
 
@@ -12,16 +12,21 @@ export interface RevisedNotes {
 }
 
 export interface MissingCriterion {
-  criterion: string;
-  status: "Met" | "Partial" | "Missing";
+  criterionId: string;
+  criterionText: string;
+  status: "Met" | "Partially Met" | "Missing";
   evidenceFound: string;
   suggestedLanguage: string;
+  scoreContribution: number;
+  maxScore: number;
 }
 
 export interface OptimizationResult {
   extractedCriteria: ExtractedCriterion[];
   revisedNotes: RevisedNotes;
   missingCriteria: MissingCriterion[];
+  overallScore: number;
+  admissionRecommended: boolean;
 }
 
 export type ProcessingStep =

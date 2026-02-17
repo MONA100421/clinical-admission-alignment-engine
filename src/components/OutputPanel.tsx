@@ -23,7 +23,7 @@ const statusColor = (status: string) => {
   switch (status) {
     case "Met":
       return "bg-emerald-100 text-emerald-800 border-emerald-300";
-    case "Partial":
+    case "Partially Met":
       return "bg-amber-100 text-amber-800 border-amber-300";
     case "Missing":
       return "bg-red-100 text-red-800 border-red-300";
@@ -71,6 +71,31 @@ const OutputPanel: React.FC<OutputPanelProps> = ({
         </TabsList>
 
         <TabsContent value="revised" className="flex-1 mt-4">
+          <Card>
+            <CardContent className="pt-4 flex items-center justify-between">
+              <div>
+                <p className="font-semibold">
+                  Alignment Score: {result.overallScore}%
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Admission Recommendation:{" "}
+                  {result.admissionRecommended
+                    ? "Recommended"
+                    : "Not Recommended"}
+                </p>
+              </div>
+              <Badge
+                variant="outline"
+                className={
+                  result.admissionRecommended
+                    ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                    : "bg-red-100 text-red-800 border-red-300"
+                }
+              >
+                {result.admissionRecommended ? "Admit" : "Do Not Admit"}
+              </Badge>
+            </CardContent>
+          </Card>
           <ScrollArea className="h-[calc(100vh-320px)]">
             <div className="space-y-4 pr-4">
               <Section
@@ -108,7 +133,7 @@ const OutputPanel: React.FC<OutputPanelProps> = ({
                 {result.missingCriteria.map((item, i) => (
                   <TableRow key={i}>
                     <TableCell className="font-medium">
-                      {item.criterion}
+                      {item.criterionText}
                     </TableCell>
                     <TableCell>
                       <Badge
