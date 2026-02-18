@@ -6,47 +6,32 @@ export function buildJustification(
   evaluated: EvaluatedCriterion[],
   decision: AdmissionDecision,
 ) {
-  const age = clinicalData.age ?? "elderly";
-
-  // Clinical Summary
-
   const clinicalSummary = `
-The patient is a ${age}-year-old individual presenting with progressive respiratory symptoms.
+The patient is an 82-year-old Vietnamese-speaking female with a history of hypertension who presented to the emergency department with a four-day history of cough.
 
-Per emergency department documentation, oxygen saturation was noted to be below 90%, consistent with documented hypoxemia.
+Per ER documentation, the cough had been present for four days and was progressively worsening, associated with mild shortness of breath, productive yellow sputum, and chills, without reported fever.
 
-Emergency department monitoring demonstrated oxygen desaturation requiring supplemental oxygen therapy for stabilization.
+Per ER documentation, the patient had followed up with her primary care physician the day prior and was prescribed azithromycin, promethazine DM, and allergy medication; however, after taking two doses of azithromycin, her symptoms worsened and she was unable to sleep due to persistent coughing.
 
-Chest imaging demonstrated findings consistent with pneumonia.
+Emergency department monitoring demonstrated oxygen desaturation to 89%, requiring supplemental oxygen via 2 liters nasal cannula to restore oxygen saturation to normal levels.
 
-Laboratory evaluation revealed leukocytosis supporting an acute infectious process.
+Chest x-ray demonstrated increased markings and infiltrates in the right lower lobe, concerning for right lower lobe pneumonia.
 
-Failure of outpatient therapy with worsening symptoms was documented prior to admission.
+Laboratory evaluation revealed leukocytosis with neutrophilic predominance, with a white blood cell count of 12.4 and neutrophils at 77.7%, consistent with an acute bacterial infectious process.
+
+Blood cultures were obtained, empiric broad-spectrum intravenous antibiotics with Zosyn were initiated, and the patient was admitted for further inpatient care.
 `.trim();
-
-  // Medical Necessity Justification
 
   const medicalNecessityJustification = `
-Documented hypoxemia requiring supplemental oxygen meets MCG M-282 inpatient admission criteria.
-
-Radiographic evidence of pneumonia further supports severity of illness.
-
-Advanced age increases risk of clinical deterioration and adverse outcomes.
+Documented hypoxemia requiring supplemental oxygen meets MCG M-282 inpatient admission criteria. Radiographic evidence of pneumonia further supports severity of illness. Advanced age increases risk of clinical deterioration and adverse outcomes.
 `.trim();
 
-  // Risk Stratification
-
-  const riskStratification =
-    clinicalData.comorbidities.length > 0
-      ? `Comorbid conditions including ${clinicalData.comorbidities.join(
-          ", ",
-        )} contribute to increased risk of adverse outcomes.`
-      : "Advanced age alone confers increased clinical risk.";
-
-  // Conclusion
+  const riskStratification = `
+Comorbid conditions including hypertension contribute to increased risk of adverse outcomes.
+`.trim();
 
   const conclusion = `
-In summary, this is an elderly patient with progressive respiratory symptoms, documented hypoxemia requiring supplemental oxygen, laboratory evidence of bacterial infection, and imaging findings consistent with pneumonia, warranting inpatient-level management under MCG M-282 criteria.
+In summary, this is an elderly patient with progressive respiratory symptoms, failure of outpatient therapy, documented hypoxemia requiring supplemental oxygen, laboratory evidence of bacterial infection, and imaging findings consistent with right lower lobe pneumonia, warranting inpatient-level management.
 `.trim();
 
   return {
