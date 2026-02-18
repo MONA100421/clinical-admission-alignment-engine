@@ -44,17 +44,20 @@ const Index = () => {
       // Step 4: Generating via AI
       setStep("generating");
 
-      const response = await fetch("http://localhost:5050/api/optimize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://clinical-alignment-backend.onrender.com/api/optimize",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            doctorNotes,
+            pdfText,
+            referenceNotes: refNotes,
+          }),
         },
-        body: JSON.stringify({
-          doctorNotes,
-          pdfText,
-          referenceNotes: refNotes,
-        }),
-      });
+      );
 
       const data = await response.json();
 
