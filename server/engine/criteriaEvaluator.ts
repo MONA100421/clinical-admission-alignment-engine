@@ -11,40 +11,43 @@ export function evaluateCriteria(
   clinicalData: ClinicalData,
 ): EvaluatedCriterion[] {
   return criteriaList.map((criterion) => {
-    let score = 0;
+    let status: "Met" | "Partially Met" | "Missing" = "Missing";
     let evidence: string[] = [];
 
-    const text = criterion.text.toLowerCase();
-
-    if (/oxygen|hypox/.test(text) && clinicalData.hypoxemia) {
-      score += 3;
-      evidence.push("Hypoxemia documented.");
+    if (criterion.category === "Respiratory") {
+      if (clinicalData.hypoxemia) {
+        status = "Met";
+        evidence.push("Hypoxemia documented.");
+      }
     }
 
-    if (/imaging|x-ray|ct/.test(text) && clinicalData.imagingFindings.length) {
-      score += 2;
-      evidence.push("Imaging findings present.");
+    if (criterion.category === "Imaging") {
+      if (clinicalData.imagingFindings.length > 0) {
+        status = "Met";
+        evidence.push("Radiographic pneumonia present.");
+      }
     }
 
-    if (/lab|wbc/.test(text) && Object.keys(clinicalData.labs).length) {
-      score += 2;
-      evidence.push("Laboratory abnormalities documented.");
+    if (criterion.category === "Laboratory") {
+      if (clinicalData.labs.wbc && clinicalData.labs.wbc > 11) {
+        status = "Partially Met";
+        evidence.push("Leukocytosis present.");
+      }
     }
 
-    if (/outpatient|failed/.test(text) && clinicalData.outpatientFailure) {
-      score += 2;
-      evidence.push("Outpatient therapy failure documented.");
+    if (criterion.category === "Outpatient") {
+      if (clinicalData.outpatientFailure) {
+        status = "Met";
+        evidence.push("Failure of outpatient therapy documented.");
+      }
     }
 
-    if (/comorbid|risk/.test(text) && clinicalData.comorbidities.length) {
-      score += 1;
-      evidence.push("Comorbidities documented.");
+    if (criterion.category === "Comorbidity") {
+      if (clinicalData.comorbidities.length > 0) {
+        status = "Partially Met";
+        evidence.push("Comorbid risk factors documented.");
+      }
     }
-
-    let status: "Met" | "Partially Met" | "Missing" = "Missing";
-
-    if (score >= 3) status = "Met";
-    else if (score > 0) status = "Partially Met";
 
     return {
       criterionId: criterion.id,
@@ -54,7 +57,8 @@ export function evaluateCriteria(
       evidenceFound: evidence.join(" "),
       suggestedLanguage:
         status === "Missing" ? `Explicitly document: ${criterion.text}` : "",
-      scoreContribution: score,
+      scoreContribution:
+        status === "Met" ? 5 : status === "Partially Met" ? 2 : 0,
     };
   });
 }

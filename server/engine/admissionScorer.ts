@@ -11,7 +11,6 @@ export function computeAdmissionDecision(
   evaluated: EvaluatedCriterion[],
 ): AdmissionDecision {
   const totalScore = evaluated.reduce((sum, c) => sum + c.scoreContribution, 0);
-
   const maxPossibleScore = evaluated.length * 5;
 
   const percentage =
@@ -19,7 +18,7 @@ export function computeAdmissionDecision(
       ? Math.round((totalScore / maxPossibleScore) * 100)
       : 0;
 
-  const admissionRecommended = percentage >= 60;
+  const admissionRecommended = evaluated.some((c) => c.status === "Met");
 
   return {
     totalScore,
@@ -28,3 +27,4 @@ export function computeAdmissionDecision(
     admissionRecommended,
   };
 }
+

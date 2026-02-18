@@ -13,6 +13,7 @@ export interface ExtractedCriterion {
 }
 
 export interface ClinicalData {
+  age?: number;
   symptoms: string[];
   vitals: Record<string, number>;
   labs: Record<string, number>;

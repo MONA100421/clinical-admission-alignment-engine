@@ -3,37 +3,60 @@ import { ClinicalData } from "./types.js";
 export function extractClinicalData(notes: string): ClinicalData {
   const lower = notes.toLowerCase();
 
-  const labs: Record<string, number> = {};
-  const wbcMatch = lower.match(/wbc\s*[:=]?\s*(\d+)/);
-  if (wbcMatch) labs["wbc"] = parseInt(wbcMatch[1]);
+  // AGE
+  const ageMatch = lower.match(/(\d{2})-year-old/);
+  const age = ageMatch ? parseInt(ageMatch[1]) : undefined;
+
+  // WBC
+  const wbcMatch = lower.match(/wbc\s*[:=]?\s*(\d+\.?\d*)/);
+  const wbc = wbcMatch ? parseFloat(wbcMatch[1]) : undefined;
+
+  // SpO2
+  const spo2Match = lower.match(/(oxygen saturation|spo2)[^\d]*(\d{2})/);
+  let spo2: number | undefined;
+
+  if (spo2Match) {
+    spo2 = parseInt(spo2Match[2]);
+  }
+
+  const hypoxemia = spo2 !== undefined && spo2 < 90;
+
+  const oxygenRequirement =
+    lower.includes("nasal cannula") ||
+    lower.includes("supplemental oxygen") ||
+    lower.includes("placed on 2 l") ||
+    lower.includes("placed on 4 l");
+
+  const imagingFindings =
+    lower.includes("pneumonia") ||
+    lower.includes("infiltrate") ||
+    lower.includes("infiltrates")
+      ? ["radiographic pneumonia"]
+      : [];
+
+  const outpatientFailure =
+    lower.includes("failed outpatient") ||
+    lower.includes("worsening") ||
+    lower.includes("no improvement");
+
+  const comorbidities: string[] = [];
+
+  if (lower.includes("hypertension")) comorbidities.push("hypertension");
+  if (lower.includes("afib")) comorbidities.push("atrial fibrillation");
+  if (lower.includes("ckd")) comorbidities.push("chronic kidney disease");
+  if (lower.includes("nursing home"))
+    comorbidities.push("healthcare-associated risk");
 
   return {
-    symptoms: [
-      ...(lower.includes("cough") ? ["cough"] : []),
-      ...(lower.includes("shortness of breath") ? ["sob"] : []),
-    ],
-
+    age,
+    symptoms: [],
     vitals: {},
-
-    labs,
-
-    imagingFindings:
-      lower.includes("x-ray") || lower.includes("ct")
-        ? ["abnormal imaging"]
-        : [],
-
-    oxygenRequirement: lower.includes("oxygen"),
-
-    hypoxemia: /o2\s*<\s*90|oxygen\s*saturation\s*<\s*90/.test(lower),
-
-    comorbidities: [
-      ...(lower.includes("hypertension") ? ["htn"] : []),
-      ...(lower.includes("diabetes") ? ["dm"] : []),
-    ],
-
-    outpatientFailure:
-      lower.includes("failed outpatient") ||
-      lower.includes("no improvement") ||
-      lower.includes("worsening"),
+    labs: wbc ? { wbc } : {},
+    imagingFindings,
+    oxygenRequirement,
+    hypoxemia,
+    comorbidities,
+    outpatientFailure,
   };
 }
+

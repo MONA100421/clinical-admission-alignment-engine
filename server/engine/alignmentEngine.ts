@@ -33,7 +33,7 @@ export function runAlignmentEngine(
   return {
     extractedCriteria: criteria,
     revisedNotes,
-    missingCriteria: evaluated,
+    missingCriteria: evaluated.filter((c) => c.status !== "Met"),
     overallScore: decision.percentage,
     admissionRecommended: decision.admissionRecommended,
   };
