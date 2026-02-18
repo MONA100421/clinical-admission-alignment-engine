@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://MONA100421.github.io/clinical-admission-alignment-engine",
+  "homepage": "https://mona100421.github.io/clinical-admission-alignment-engine",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
