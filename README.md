@@ -7,7 +7,10 @@
 
 ---
 
-A deterministic web-based system that aligns physician documentation with structured MCG Admission Guideline criteria using a rule-based engine. No generative AI or LLM APIs are used.
+A deterministic full-stack web system that aligns physician documentation with structured MCG M-282 Pneumonia Admission Criteria using a rule-based engine.
+
+✅ Fully deterministic
+✅ Clinically auditable
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
@@ -15,15 +18,36 @@ A deterministic web-based system that aligns physician documentation with struct
 ![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
 ![Deterministic Engine](https://img.shields.io/badge/Rule--Based-Deterministic-blue)
 
+## 🌐 Live Deployment
+Frontend (GitHub Pages)
+
+https://mona100421.github.io/clinical-admission-alignment-engine/
+
+Backend (Render)
+
+https://clinical-alignment-backend.onrender.com
+
 ## Project Overview
 
-This system implements a two-page clinical workflow that accepts raw physician notes and an MCG Guideline PDF, extracts structured admission criteria, performs deterministic criteria matching, and generates optimized documentation with an admission alignment score. It supports validation comparison against reference documentation and operates entirely through predefined rules and structured logic.
+This system implements a deterministic two-page clinical documentation optimization workflow aligned with MCG M-282 Pneumonia admission criteria.
+
+The application:
+
+1. Accepts raw physician documentation and an MCG guideline PDF.
+2. Extracts structured clinical signals (e.g., hypoxemia, oxygen requirement, leukocytosis, comorbid risk).
+3. Parses and maps guideline admission criteria into discrete evaluable rules.
+4. Performs deterministic criteria matching using a rule-based engine.
+5. Computes a transparent admission alignment score.
+6. Generates structured revised documentation with medical necessity justification.
+7. Optionally performs section-level validation against a reference output.
+
+All outputs are reproducible, auditable, and traceable to explicit rule logic.
 
 ## Core Architecture
 
-- Frontend: React + TypeScript + TailwindCSS + pdfjs-dist
-- Backend: Node.js + Express + TypeScript
-- Processing: Deterministic Rule Engine (no LLM/AI APIs)
+- Frontend: React + TypeScript + TailwindCSS + pdfjs-dist + GitHub Pages deployment
+- Backend: Node.js + Express + TypeScript + Render + deployment Stateless rule engine
+- Processing: Deterministic Rule Engine
 - Data flow: Linear pipeline through discrete, stateless components
 
 ## Data Workflow
@@ -43,19 +67,16 @@ G --> H
 
 #### Application Preview
 🔹 Main Workflow
-<p align="center">
-  <img src="screenshots/main_workflow.png" width="900"/>
-</p>
+<p align="center"> <img src="screenshots/Main Workflow.png" width="900"/> </p>
 
 🔹 Missing Criteria Evaluation
-<p align="center">
-  <img src="screenshots/Missing_Criteria_Evaluation.png" width="900"/>
-</p>
+<p align="center"> <img src="screenshots/Missing Criteria View.png" width="900"/> </p>
 
 🔹 Validation Mode
-<p align="center">
-  <img src="screenshots/Validation_Mode.png" width="900"/>
-</p>
+<p align="center"> <img src="screenshots/Validation Mode.png" width="900"/> </p>
+
+🔹 Production Deployment
+<p align="center"> <img src="screenshots/Deployment Screenshot.png" width="900"/> </p>
 
 ### Page 1 – Input Interface
 Required inputs:
@@ -121,24 +142,27 @@ npm run dev
 /
 ├── server/
 │   ├── engine/
-│   │   ├── alignmentEngine.ts      # Orchestrates the full pipeline
-│   │   ├── criteriaExtractor.ts    # Extracts and categorizes criteria
-│   │   ├── types.ts                # Core type definitions
-│   │   ├── admissionScorer.ts      # Scoring and admission decision
-│   │   └── justificationBuilder.ts # Generates revised notes
-│   └── index.ts                    # Express API entry point
+│   │   ├── alignmentEngine.ts
+│   │   ├── criteriaExtractor.ts
+│   │   ├── clinicalExtractor.ts
+│   │   ├── criteriaEvaluator.ts
+│   │   ├── admissionScorer.ts
+│   │   └── justificationBuilder.ts
+│   └── index.ts
 ├── src/
 │   ├── components/
-│   │   ├── ValidationComparison.tsx # Validation mode UI
-│   │   └── ...
-│   └── ...
+│   │   ├── InputPanel.tsx
+│   │   ├── OutputPanel.tsx
+│   │   ├── ValidationComparison.tsx
+│   └── pages/
 └── README.md
+
 ```
 
 ## Security & Design Philosophy
 
 - No persistent storage; all processing is session-based
-- No external AI APIs; fully deterministic logic
+- Fully deterministic logic
 - Stateless components with no side effects
 - Auditability: every decision traces to specific rules
 - Reproducibility: identical inputs produce identical outputs
@@ -148,6 +172,3 @@ npm run dev
 
 This tool assists clinical documentation and does not replace physician judgment.
 
-## Notes
-
-The admission threshold is set at 60%: `percentage >= 60% → Admit`. Criteria are categorized as Respiratory, Imaging, Laboratory, Outpatient, Comorbidity, or General based on keyword patterns. The engine uses a weighted scoring model where each criterion contributes up to 5 points; "Met" criteria contribute full weight, "Partially Met" contribute partial weight, and "Missing" contribute zero. The `AlignmentResult` aggregates extracted criteria, revised notes, missing criteria, overall score, and admission recommendation.
