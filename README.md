@@ -41,13 +41,13 @@ The application:
 6. Generates structured revised documentation with medical necessity justification.
 7. Optionally performs section-level validation against a reference output.
 
-All outputs are reproducible, auditable, and traceable to explicit rule logic.
+All outputs are reproducible, auditable, and fully explainable through explicit rule evaluation.
 
 ## Core Architecture
 
 - Frontend: React + TypeScript + TailwindCSS + pdfjs-dist + GitHub Pages deployment
-- Backend: Node.js + Express + TypeScript + Render + deployment Stateless rule engine
-- Processing: Deterministic Rule Engine
+- Backend: Node.js + Express + TypeScript (deployed on Render)
+- Architecture: Stateless deterministic rule engine
 - Data flow: Linear pipeline through discrete, stateless components
 
 ## Data Workflow
@@ -133,7 +133,7 @@ npm run dev
 ```bash
 npm install
 npm run dev
-# Frontend runs at http://localhost:8081
+# Frontend runs at http://localhost:8080 (default Vite port)
 ```
 
 ## Project Structure
